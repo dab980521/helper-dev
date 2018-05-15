@@ -13,6 +13,14 @@ class CreateArticlesTable extends Migration
      */
     public function up()
     {
+        Schema::create('articles', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('title')->index();
+            $table->text('body');
+            $table->integer('leftChild')->unsigned()->default(0);
+            $table->integer('rightChild')->unsigned()->default(0);
+            $table->boolean('isRoot')->default(false);
+            $table->timestamps();
         });
     }
 
