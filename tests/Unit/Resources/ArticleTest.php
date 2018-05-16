@@ -28,4 +28,20 @@ class ArticleTest extends TestCase
         $response = $this->get(route('articles.tree',['id' => 5]));
         $response->assertStatus(200);
     }
+
+    public function testStoreStatusCode(){
+        $response = $this->post(route('articles.store'),[
+            'title' => 'hello',
+            'body' => "It's not bad",
+        ]);
+
+//        $response = $this->post(route('articles.store'));
+
+        $response->assertStatus(201);
+    }
+
+//    public function testStore(){
+//        $resopnse = $this->post(route('articles.store'));
+//        echo $response->aseertS
+//    }
 }

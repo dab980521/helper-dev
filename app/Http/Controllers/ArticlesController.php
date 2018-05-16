@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Article;
+use App\Http\Requests\ArticleRequest;
 use App\Http\Resources\ArticleResource;
 use Illuminate\Http\Request;
 
@@ -49,5 +50,16 @@ class ArticlesController extends Controller
             "title" => $this->box[$node]->title,
             "children" => $children
         ];
+    }
+
+    public function store(Request $request){
+        $title = $request->input('title');
+        $body = $request->input('body');
+        $article = new Article(compact('title','body'));
+//        $article->fill($request->all());
+        $article->save();
+        return response()->json([
+            'message' => '成功创建节点'
+        ],201);
     }
 }
