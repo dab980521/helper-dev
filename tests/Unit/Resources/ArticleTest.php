@@ -2,12 +2,14 @@
 
 namespace Tests\Unit\Resources;
 
+use App\Article;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class ArticleTest extends TestCase
 {
+    use WithFaker;
     /**
      * A basic test example.
      *
@@ -29,19 +31,16 @@ class ArticleTest extends TestCase
         $response->assertStatus(200);
     }
 
-    public function testStoreStatusCode(){
+    public function testStore(){
+        // find a node who doesn't have a leftChild
+        $id = Article::where('root','<>',0)
+            ->where('leftChild',0)->first()->id;
         $response = $this->post(route('articles.store'),[
-            'title' => 'hello',
-            'body' => "It's not bad",
+            'title' => $this->faker->text(10),
+            'body' => $this->faker->text(100),
+            'parentId' => $id,
+            'type' => "left"
         ]);
-
-//        $response = $this->post(route('articles.store'));
-
         $response->assertStatus(201);
     }
-
-//    public function testStore(){
-//        $resopnse = $this->post(route('articles.store'));
-//        echo $response->aseertS
-//    }
 }
