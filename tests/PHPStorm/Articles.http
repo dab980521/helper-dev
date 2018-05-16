@@ -4,6 +4,13 @@ Cache-Control: no-cache
 
 ###
 
+GET http://10.1.38.20/api/articles/5/tree
+Accept: */*
+Cache-Control: no-cache
+
+
+###
+
 # For a quick start check out our HTTP Requests collection (Tools|HTTP Client|Open HTTP Requests Collection).
 #
 # Following HTTP Request Live Templates are available:
