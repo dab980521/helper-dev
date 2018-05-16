@@ -9,7 +9,15 @@ use Illuminate\Http\Request;
 
 class ArticlesController extends Controller
 {
+    /**
+     * @var Collection
+     */
     private $box;
+
+    /**
+     * @var Collection
+     */
+    private $subtree;
 
     public function index(Request $request){
         $onlyRoot = $request->input("onlyRoot");
