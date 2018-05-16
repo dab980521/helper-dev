@@ -23,4 +23,9 @@ class ArticleTest extends TestCase
 
         $response->assertStatus(200);
     }
+
+    public function testTree(){
+        $response = $this->get(route('articles.tree',['id' => 5]));
+        $response->assertStatus(200);
+    }
 }
