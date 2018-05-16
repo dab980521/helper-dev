@@ -20,6 +20,7 @@ class CreateArticlesTable extends Migration
             $table->integer('leftChild')->unsigned()->default(0);
             $table->integer('rightChild')->unsigned()->default(0);
             $table->boolean('isRoot')->default(false);
+            $table->unsignedInteger('root')->nullable();
             $table->timestamps();
         });
     }
