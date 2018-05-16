@@ -11,10 +11,10 @@ class ArticleRequest extends FormRequest
      *
      * @return bool
      */
-//    public function authorize()
-//    {
-//        return false;
-//    }
+    public function authorize()
+    {
+        return true;
+    }
 
     /**
      * Get the validation rules that apply to the request.
@@ -23,7 +23,20 @@ class ArticleRequest extends FormRequest
      */
     public function rules()
     {
-        return [];
+        switch ($this->method()){
+            case 'POST':
+            {
+                return [
+                    'title' => 'required',
+                    'parentId' => 'required',
+                    'body' => 'required',
+                    'type' => 'required',
+                ];
+            }
+            default:{
+                return [];
+            }
+        }
     }
 
     // TODO: article request need message method
