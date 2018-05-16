@@ -6,6 +6,7 @@ use App\Article;
 use App\Http\Requests\ArticleRequest;
 use App\Http\Resources\ArticleResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class ArticlesController extends Controller
 {
@@ -43,6 +44,7 @@ class ArticlesController extends Controller
         $this->box = $articles->mapWithKeys(function($item){
             return [ $item->id => $item];
         });
+        $this->cacheArticlesCollection($root);
         return $this->treeify($root);
     }
 
@@ -95,4 +97,12 @@ class ArticlesController extends Controller
             'message' => '成功创建节点'
         ],201);
     }
+
+    private function cacheArticlesCollection($rootId){
+        $this->box = collect();
+        $this->box = Article::where('root',$rootId)->get()->mapWithKeys(function($item){
+            return [ $item->id => $item];
+        });
+    }
+
 }
