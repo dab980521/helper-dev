@@ -21,3 +21,7 @@ Route::resource('articles','ArticlesController')->only([
 ]);
 
 Route::get('/articles/{id}/tree',"ArticlesController@tree")->name('articles.tree');
+
+Route::resource('articles','ArticlesController')->except([
+    'index', 'show'
+]);// TODO: need auth middleware
