@@ -39,11 +39,6 @@ class ArticlesController extends Controller
         // 查找 root
         $root = Article::findOrFail($id)->root;
         // 获取树
-        $articles= Article::where('root',$root)->get();
-        // 将 Database Collection 改造成 ( $id => $item ) Hash Map
-        $this->box = $articles->mapWithKeys(function($item){
-            return [ $item->id => $item];
-        });
         $this->cacheArticlesCollection($root);
         return $this->treeify($root);
     }
