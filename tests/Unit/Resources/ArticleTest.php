@@ -43,4 +43,12 @@ class ArticleTest extends TestCase
         ]);
         $response->assertStatus(201);
     }
+
+    public function testDestroy(){
+        // TODO: 需要优化
+        $response = $this->withoutMiddleware()->delete(route('articles.destroy',['article' => 56]),[
+            'id' => 56
+        ]);
+        $response->assertStatus(204);
+    }
 }

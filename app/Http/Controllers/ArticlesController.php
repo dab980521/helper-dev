@@ -6,10 +6,19 @@ use App\Article;
 use App\Http\Requests\ArticleRequest;
 use App\Http\Resources\ArticleResource;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class ArticlesController extends Controller
 {
+    /**
+     * @var Collection
+     */
     private $box;
+
+    /**
+     * @var Collection
+     */
+    private $subtree;
 
     public function index(Request $request){
         $onlyRoot = $request->input("onlyRoot");
@@ -30,11 +39,7 @@ class ArticlesController extends Controller
         // 查找 root
         $root = Article::findOrFail($id)->root;
         // 获取树
-        $articles= Article::where('root',$root)->get();
-        // 将 Database Collection 改造成 ( $id => $item ) Hash Map
-        $this->box = $articles->mapWithKeys(function($item){
-            return [ $item->id => $item];
-        });
+        $this->cacheArticlesCollection($root);
         return $this->treeify($root);
     }
 
@@ -86,5 +91,43 @@ class ArticlesController extends Controller
         return response()->json([
             'message' => '成功创建节点'
         ],201);
+    }
+
+    public function destroy(ArticleRequest $request){
+        $article = Article::findOrFail($request->id);
+        $root = Article::findOrFail($article->id)->root;
+        // 清除缓存
+        $this->box = collect();
+        $this->subtree = collect();
+        // 缓存整树
+        $this->cacheArticlesCollection($root);
+        // 缓存子树
+        $this->cacheSubtree($article->id);
+        Article::destroy($this->subtree->toArray());
+        Article::where('leftChild',$article->id)->update(['leftChild' => 0]);
+        Article::where('rightChild',$article->id)->update(['rightChild' => 0]);
+        return response()->json([
+            'message' => '删除成功'
+        ],204);
+    }
+
+    private function cacheArticlesCollection($rootId){
+        $this->box = collect();
+        $this->box = Article::where('root',$rootId)->get()->mapWithKeys(function($item){
+            return [ $item->id => $item];
+        });
+    }
+
+    private function cacheSubtree($id){
+        $this->subtree->push($id);
+        $left = $this->box[$id]->leftChild;
+        $right = $this->box[$id]->rightChild;
+        if ($left){
+            $this->cacheSubtree($left);
+        }
+        if ($right){
+            $this->cacheSubtree($right);
+        }
+
     }
 }
