@@ -100,4 +100,16 @@ class ArticlesController extends Controller
         });
     }
 
+    private function cacheSubtree($id){
+        $this->subtree->push($id);
+        $left = $this->box[$id]->leftChild;
+        $right = $this->box[$id]->rightChild;
+        if ($left){
+            $this->cacheSubtree($left);
+        }
+        if ($right){
+            $this->cacheSubtree($right);
+        }
+
+    }
 }
