@@ -93,6 +93,24 @@ class ArticlesController extends Controller
         ],201);
     }
 
+    public function destroy(ArticleRequest $request){
+        $article = Article::findOrFail($request->id);
+        $root = Article::findOrFail($article->id)->root;
+        // 清除缓存
+        $this->box = collect();
+        $this->subtree = collect();
+        // 缓存整树
+        $this->cacheArticlesCollection($root);
+        // 缓存子树
+        $this->cacheSubtree($article->id);
+        Article::destroy($this->subtree->toArray());
+        Article::where('leftChild',$article->id)->update(['leftChild' => 0]);
+        Article::where('rightChild',$article->id)->update(['rightChild' => 0]);
+        return response()->json([
+            'message' => '删除成功'
+        ],204);
+    }
+
     private function cacheArticlesCollection($rootId){
         $this->box = collect();
         $this->box = Article::where('root',$rootId)->get()->mapWithKeys(function($item){
