@@ -24,7 +24,7 @@ class ArticlesController extends Controller
         $onlyRoot = $request->input("onlyRoot");
         $model = Article::getModel();
         if ($onlyRoot){
-            $model->where('isRoot',true);
+            $model = $model->where('isRoot',true);
         }
         return ArticleResource::collection($model->get());
     }
@@ -59,20 +59,13 @@ class ArticlesController extends Controller
 
     /**
      * 第二参数*仅*用作创建空模型
-     * 必需的参数：title, body, root
+     * 模型必需的参数：title, body, root
      *
      * @param ArticleRequest $request
      * @param Article $article
      * @return \Illuminate\Http\JsonResponse
      */
     public function store(ArticleRequest $request, Article $article){
-
-        // 参数列表
-//        $attributes = [
-//            'title',
-//            'body',
-//            'root',
-//        ]; TODO: move this to phpdoc
         $title = $request->title;
         $body = $request->body;
         $parent = Article::findOrFail($request->parentId);
@@ -107,14 +100,21 @@ class ArticlesController extends Controller
         // 清除缓存
         $this->box = collect();
         $this->subtree = collect();
-        // 缓存整树
+        // 缓存
         $this->cacheArticlesCollection($root);
-        // 缓存子树
         $this->cacheSubtree($article->id);
-        Article::destroy($this->subtree->toArray());
-        // 解引用
-        Article::where('leftChild',$article->id)->update(['leftChild' => 0]);
-        Article::where('rightChild',$article->id)->update(['rightChild' => 0]);
+        try {
+            \DB::transaction(function () use ($article){
+                Article::destroy($this->subtree->toArray());
+                // 解引用
+                Article::where('leftChild',$article->id)->update(['leftChild' => 0]);
+                Article::where('rightChild',$article->id)->update(['rightChild' => 0]);
+            });
+        }catch (\Throwable $exception){
+            return response()->json([
+                'message' => '删除失败'
+            ],500);
+        }
         return response()->json([
             'message' => '删除成功'
         ],204);
