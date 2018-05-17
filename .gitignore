@@ -18,3 +18,4 @@ resources/.DS_Store
 resources/assets/.DS_Store
 resources/views/.DS_Store
 .env
+resources/views/desktop/.DS_Store
