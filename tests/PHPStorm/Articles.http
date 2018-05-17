@@ -8,6 +8,11 @@ GET http://10.1.38.20/api/articles/5/tree
 Accept: */*
 Cache-Control: no-cache
 
+###
+
+GET http://10.1.38.20/api/articles?onlyRoot=1
+Accept: */*
+Cache-Control: no-cache
 
 ###
 
