@@ -25,3 +25,5 @@ Route::get('/articles/{id}/tree',"ArticlesController@tree")->name('articles.tree
 Route::resource('articles','ArticlesController')->except([
     'index', 'show'
 ]);// TODO: need auth middleware
+
+Route::post('upload_image','ArticlesController@uploadImage')->name('articles.upload_image');
