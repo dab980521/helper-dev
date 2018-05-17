@@ -57,6 +57,14 @@ class ArticlesController extends Controller
         ];
     }
 
+    /**
+     * 第二参数*仅*用作创建空模型
+     * 必需的参数：title, body, root
+     *
+     * @param ArticleRequest $request
+     * @param Article $article
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(ArticleRequest $request, Article $article){
 
         // 参数列表
@@ -104,6 +112,7 @@ class ArticlesController extends Controller
         // 缓存子树
         $this->cacheSubtree($article->id);
         Article::destroy($this->subtree->toArray());
+        // 解引用
         Article::where('leftChild',$article->id)->update(['leftChild' => 0]);
         Article::where('rightChild',$article->id)->update(['rightChild' => 0]);
         return response()->json([
@@ -111,6 +120,10 @@ class ArticlesController extends Controller
         ],204);
     }
 
+    /**
+     * 将整棵树以 hash map 的形式缓存在全局变量 $this->box 中
+     * @param $rootId
+     */
     private function cacheArticlesCollection($rootId){
         $this->box = collect();
         $this->box = Article::where('root',$rootId)->get()->mapWithKeys(function($item){
