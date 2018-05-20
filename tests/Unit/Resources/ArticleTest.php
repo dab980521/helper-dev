@@ -51,4 +51,9 @@ class ArticleTest extends TestCase
         ]);
         $response->assertStatus(204);
     }
+    public function testCache(){
+        Cache::put('key','value',3);
+        $value = Cache::get('key');
+        $this->assertEquals('value',$value);
+    }
 }

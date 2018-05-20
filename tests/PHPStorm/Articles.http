@@ -4,13 +4,19 @@ Cache-Control: no-cache
 
 ###
 
-GET http://10.1.38.20/api/articles/5/tree
+GET http://10.1.38.20/api/articles/42/tree
 Accept: */*
 Cache-Control: no-cache
 
 ###
 
 GET http://10.1.38.20/api/articles?onlyRoot=1
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+DELETE http://10.1.38.20/api/articles/43?id=43
 Accept: */*
 Cache-Control: no-cache
 
