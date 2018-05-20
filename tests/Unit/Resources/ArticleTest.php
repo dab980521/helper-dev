@@ -3,6 +3,7 @@
 namespace Tests\Unit\Resources;
 
 use App\Article;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -46,8 +47,8 @@ class ArticleTest extends TestCase
 
     public function testDestroy(){
         // TODO: 需要优化
-        $response = $this->withoutMiddleware()->delete(route('articles.destroy',['article' => 56]),[
-            'id' => 56
+        $response = $this->withoutMiddleware()->delete(route('articles.destroy',['article' => 60]),[
+            'id' => 60
         ]);
         $response->assertStatus(204);
     }
