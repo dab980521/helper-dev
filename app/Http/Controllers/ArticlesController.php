@@ -53,7 +53,8 @@ class ArticlesController extends Controller
         }
         return [
             "title" => $this->box[$node]->title,
-            "children" => $children
+            "id" => $this->box[$node]->id,
+            "children" => $children,
         ];
     }
 
