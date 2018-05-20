@@ -52,6 +52,15 @@ class ArticleTest extends TestCase
         ]);
         $response->assertStatus(204);
     }
+
+    public function testDestroyWithMiddleware(){
+        // TODO: 需要优化
+        $response = $this->delete(route('articles.destroy',['article' => 42]),[
+            'id' => 42
+        ]);
+        $response->assertStatus(204);
+    }
+
     public function testCache(){
         Cache::put('key','value',3);
         $value = Cache::get('key');
