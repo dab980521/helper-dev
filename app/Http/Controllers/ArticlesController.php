@@ -78,16 +78,25 @@ class ArticlesController extends Controller
         $root = $parent->root;
         // fill model
         $article->fill(compact('title','body','root'));
-        // commit model
-        $article->save();
-        // update parent
-        if ($request->type === "left"){
-            $parent->leftChild = $article->id;
-            $parent->update();
-        }
-        if ($request->type === "right"){
-            $parent->rightChild = $article->id;
-            $parent->update();
+        try {
+            \DB::transaction(function () use (&$article, &$request, &$parent){
+                // commit model
+                $article->save();
+                // update parent
+                if ($request->type === "left"){
+                    $parent->leftChild = $article->id;
+                    $parent->update();
+                }
+                if ($request->type === "right"){
+                    $parent->rightChild = $article->id;
+                    $parent->update();
+                }
+            });
+        }catch (\Throwable $exception){
+            return response()->json([
+                'message' => '节点创建失败, 所有操作已回滚',
+                'code' => $exception->getCode(),
+            ], 500);
         }
         return response()->json([
             'message' => '成功创建节点'
@@ -112,7 +121,7 @@ class ArticlesController extends Controller
             });
         }catch (\Throwable $exception){
             return response()->json([
-                'message' => '删除失败'
+                'message' => '删除失败, 所有操作已回滚'
             ],500);
         }
         return response()->json([
