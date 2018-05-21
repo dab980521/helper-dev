@@ -159,9 +159,7 @@ class ArticlesController extends Controller
      */
     private function cacheArticlesCollection($rootId){
         $this->box = collect();
-        $this->box = Article::where('root',$rootId)->get()->mapWithKeys(function($item){
-            return [ $item->id => $item];
-        });
+        $this->box = Article::where('root',$rootId)->get()->keyBy('id');
     }
 
     private function cacheSubtree($id){
