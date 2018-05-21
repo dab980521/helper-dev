@@ -104,6 +104,29 @@ class ArticlesController extends Controller
         ],201);
     }
 
+    /**
+     * @param ArticleRequest $request
+     * @param Article $article
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(ArticleRequest $request, Article $article){
+        // fill model
+        $article->fill($request->all());
+        try {
+            \DB::transaction(function () use (&$article){
+                $article->save();
+            });
+        }catch (\Throwable $exception){
+            return response()->json([
+                'message' => '节点创建失败, 所有操作已回滚',
+                'code' => $exception->getCode(),
+            ], 500);
+        }
+        return response()->json([
+            'message' => '成功创建节点'
+        ],201);
+    }
+
     public function destroy(ArticleRequest $request){
         $article = Article::findOrFail($request->id);
         $root = Article::findOrFail($article->id)->root;
