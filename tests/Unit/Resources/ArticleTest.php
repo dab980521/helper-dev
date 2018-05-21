@@ -45,6 +45,26 @@ class ArticleTest extends TestCase
         $response->assertStatus(201);
     }
 
+    public function testRandomStore(){
+        foreach (range(0,10) as $number){
+            $childTypes = [
+                0 => 'left',
+                1 => 'right'
+            ];
+            $rand = rand()%2;
+            $childType = $childTypes[$rand];
+            $id = Article::where('root','<>',0)
+                ->where($childType."Child",0)->inRandomOrder()->first()->id;
+            $response = $this->post(route('articles.store'),[
+                'title' => $this->faker->text(10),
+                'body' => $this->faker->text(100),
+                'parentId' => $id,
+                'type' => $childType,
+            ]);
+            $response->assertStatus(201);
+        }
+    }
+
     public function testDestroy(){
         // TODO: 需要优化
         $response = $this->withoutMiddleware()->delete(route('articles.destroy',['article' => 60]),[
