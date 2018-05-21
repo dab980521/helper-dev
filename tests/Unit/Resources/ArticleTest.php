@@ -66,4 +66,15 @@ class ArticleTest extends TestCase
         $value = Cache::get('key');
         $this->assertEquals('value',$value);
     }
+
+    public function testUpdate(){
+        $id = 222;
+        $title = $this->faker->text(10);
+        $body = $this->faker->text(100);
+        $response = $this->patch(route('articles.update',['article' => $id]), compact('title','body'));
+        $response->assertStatus(201);
+        $article = Article::findOrFail($id);
+        $this->assertEquals($title,$article->title);
+        $this->assertEquals($body,$article->body);
+    }
 }
