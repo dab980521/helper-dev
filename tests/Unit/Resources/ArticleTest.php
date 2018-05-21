@@ -66,19 +66,24 @@ class ArticleTest extends TestCase
     }
 
     public function testDestroy(){
+        $article = 109;
+        $id = $article;
         // TODO: 需要优化
-        $response = $this->withoutMiddleware()->delete(route('articles.destroy',['article' => 60]),[
-            'id' => 60
+        $response = $this->withoutMiddleware()->delete(route('articles.destroy',['article' => $article]),[
+            'id' => $id
         ]);
         $response->assertStatus(204);
     }
 
     public function testDestroyWithMiddleware(){
+        $article = 42;
+        $id = $article;
         // TODO: 需要优化
-        $response = $this->delete(route('articles.destroy',['article' => 42]),[
-            'id' => 42
+        $response = $this->delete(route('articles.destroy',['article' => $article]),[
+            'id' => $id
         ]);
         $response->assertStatus(204);
+
     }
 
     public function testCache(){
