@@ -160,7 +160,8 @@ class ArticlesController extends Controller
             'msg' => '上传失败',
             'file_path' => '',
         ];
-        if ($file = $request->upload_file){
+        $status_code = 500;
+         if ($file = $request->upload_file){
             $result = $uploader->save($request->upload_file, 'topics', \Auth::id(), 1024);
             if ($result){
                 $data = [
@@ -168,9 +169,10 @@ class ArticlesController extends Controller
                     'msg' => '上传成功',
                     'success' => true,
                 ];
+                $status_code = 201;
             }
         }
-        return response()->json($data,201);
+        return response()->json($data,$status_code);
     }
 
     /**
