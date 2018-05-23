@@ -18,3 +18,7 @@ Route::get('/', function () {
 Route::get('/mobile',function(){
     return view('mobile.index');
 });
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
