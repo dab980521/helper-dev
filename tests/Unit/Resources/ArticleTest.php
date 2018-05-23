@@ -3,7 +3,9 @@
 namespace Tests\Unit\Resources;
 
 use App\Article;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -125,5 +127,13 @@ class ArticleTest extends TestCase
         $article = Article::findOrFail($root);
         $article->root = $root;
         $article->update();
+    }
+
+    public function testUploadImage(){
+        Storage::fake('avatars');
+        $response = $this->json('POST',route('articles.upload_image'),[
+            'avatar' => UploadedFile::fake()->image('avatar.jpg')
+        ]);
+        $response->assertStatus(201);
     }
 }
