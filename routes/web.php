@@ -14,3 +14,7 @@
 Route::get('/', function () {
     return view('desktop.index');
 });
+
+Route::get('/mobile',function(){
+    return view('mobile.index');
+});
