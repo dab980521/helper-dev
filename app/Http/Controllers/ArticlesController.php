@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Article;
+use App\Handlers\ImageUploadHandler;
 use App\Http\Requests\ArticleRequest;
 use App\Http\Resources\ArticleResource;
 use Illuminate\Http\Request;
@@ -151,6 +152,25 @@ class ArticlesController extends Controller
         return response()->json([
             'message' => '删除成功'
         ],204);
+    }
+
+    public function uploadImage(Request $request, ImageUploadHandler $uploader){
+        $data = [
+            'success' => false,
+            'msg' => '上传失败',
+            'file_path' => '',
+        ];
+        if ($file = $request->upload_file){
+            $result = $uploader->save($request->upload_file, 'topics', \Auth::id(), 1024);
+            if ($result){
+                $data = [
+                    'file_path' => $result['path'],
+                    'msg' => '上传成功',
+                    'success' => true,
+                ];
+            }
+        }
+        return response()->json($data,201);
     }
 
     /**
