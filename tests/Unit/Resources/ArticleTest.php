@@ -30,7 +30,8 @@ class ArticleTest extends TestCase
     }
 
     public function testTree(){
-        $response = $this->get(route('articles.tree',['id' => 9]));
+        $id = Article::where("isRoot",true)->inRandomOrder()->get()->first()->id;
+        $response = $this->get(route('articles.tree',['id' => $id]));
         $response->assertStatus(200);
     }
 
@@ -48,7 +49,8 @@ class ArticleTest extends TestCase
     }
 
     public function testRandomStore(){
-        foreach (range(0,10) as $number){
+        $num = 5;
+        foreach (range(0,$num) as $number){
             $childTypes = [
                 0 => 'left',
                 1 => 'right'
@@ -123,17 +125,13 @@ class ArticleTest extends TestCase
         $title = $this->faker->text(10);
         $body = $this->faker->text(100);
         $isRoot = true;
-        $root = Article::insertGetId(compact('title','body','isRoot'));
-        $article = Article::findOrFail($root);
+        $article = Article::getModel();
+        $article = $article->fill(compact('title','body','isRoot'));
+        $article->save();
+        $root = $article->id;
         $article->root = $root;
         $article->update();
-    }
-
-    public function testUploadImage(){
-        Storage::fake('avatars');
-        $response = $this->json('POST',route('articles.upload_image'),[
-            'avatar' => UploadedFile::fake()->image('avatar.jpg')
-        ]);
-        $response->assertStatus(201);
+        $data = Article::where("isRoot",true)->latest()->get()->first()->id;
+        $this->assertEquals($data,$root);
     }
 }
