@@ -105,6 +105,29 @@ class ArticlesController extends Controller
         ],201);
     }
 
+    public function store_root(ArticleRequest $request, Article $article){
+        $title = $request->title;
+        $body = $request->body;
+        $isRoot = true;
+        // fill model
+        $article->fill(compact('title','body','isRoot'));
+        try {
+            \DB::transaction(function () use (&$article){
+                // commit model
+                $article->save();
+            });
+        }catch (\Throwable $exception){
+            return response()->json([
+                'message' => '根节点创建失败, 所有操作已回滚',
+                'code' => $exception->getCode(),
+            ], 500);
+        }
+        return response()->json([
+            'message' => '成功创建节点'
+        ],201);
+    }
+
+
     /**
      * @param ArticleRequest $request
      * @param Article $article

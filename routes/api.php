@@ -26,4 +26,6 @@ Route::resource('articles','ArticlesController')->except([
     'index', 'show'
 ]);// TODO: need auth middleware
 
+Route::post('articles_root','ArticlesController@store_root')->name('articles.store_root');
+
 Route::post('upload_image','ArticlesController@uploadImage')->name('articles.upload_image');
