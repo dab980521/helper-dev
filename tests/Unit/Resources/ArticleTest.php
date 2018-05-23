@@ -134,4 +134,12 @@ class ArticleTest extends TestCase
         $data = Article::where("isRoot",true)->latest()->get()->first()->id;
         $this->assertEquals($data,$root);
     }
+
+    public function testUploadImage(){
+        Storage::fake('avatars');
+        $response = $this->json('POST',route('articles.upload_image'),[
+            'upload_file' => UploadedFile::fake()->image('avatar.jpg')
+        ]);
+        $response->assertStatus(201);
+    }
 }
