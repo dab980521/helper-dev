@@ -11,11 +11,5 @@ Homestead.yaml
 npm-debug.log
 yarn-error.log
 .env
-public/.DS_Store
-public/css/.DS_Store
-public/js/.DS_Store
-resources/.DS_Store
-resources/assets/.DS_Store
-resources/views/.DS_Store
-.env
-resources/views/desktop/.DS_Store
+.DS_Store
+

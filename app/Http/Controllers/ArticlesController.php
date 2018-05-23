@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Article;
+use App\Handlers\ImageUploadHandler;
 use App\Http\Requests\ArticleRequest;
 use App\Http\Resources\ArticleResource;
 use Illuminate\Http\Request;
@@ -53,7 +54,8 @@ class ArticlesController extends Controller
         }
         return [
             "title" => $this->box[$node]->title,
-            "children" => $children
+            "id" => $this->box[$node]->id,
+            "children" => $children,
         ];
     }
 
@@ -78,16 +80,71 @@ class ArticlesController extends Controller
         $root = $parent->root;
         // fill model
         $article->fill(compact('title','body','root'));
-        // commit model
-        $article->save();
-        // update parent
-        if ($request->type === "left"){
-            $parent->leftChild = $article->id;
-            $parent->update();
+        try {
+            \DB::transaction(function () use (&$article, &$request, &$parent){
+                // commit model
+                $article->save();
+                // update parent
+                if ($request->type === "left"){
+                    $parent->leftChild = $article->id;
+                    $parent->update();
+                }
+                if ($request->type === "right"){
+                    $parent->rightChild = $article->id;
+                    $parent->update();
+                }
+            });
+        }catch (\Throwable $exception){
+            return response()->json([
+                'message' => '节点创建失败, 所有操作已回滚',
+                'code' => $exception->getCode(),
+            ], 500);
         }
-        if ($request->type === "right"){
-            $parent->rightChild = $article->id;
-            $parent->update();
+        return response()->json([
+            'message' => '成功创建节点'
+        ],201);
+    }
+
+    public function store_root(ArticleRequest $request, Article $article){
+        $title = $request->title;
+        $body = $request->body;
+        $isRoot = true;
+        // fill model
+        $article->fill(compact('title','body','isRoot'));
+        try {
+            \DB::transaction(function () use (&$article){
+                // commit model
+                $article->save();
+            });
+        }catch (\Throwable $exception){
+            return response()->json([
+                'message' => '根节点创建失败, 所有操作已回滚',
+                'code' => $exception->getCode(),
+            ], 500);
+        }
+        return response()->json([
+            'message' => '成功创建节点'
+        ],201);
+    }
+
+
+    /**
+     * @param ArticleRequest $request
+     * @param Article $article
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function update(ArticleRequest $request, Article $article){
+        // fill model
+        $article->fill($request->all());
+        try {
+            \DB::transaction(function () use (&$article){
+                $article->save();
+            });
+        }catch (\Throwable $exception){
+            return response()->json([
+                'message' => '节点创建失败, 所有操作已回滚',
+                'code' => $exception->getCode(),
+            ], 500);
         }
         return response()->json([
             'message' => '成功创建节点'
@@ -112,12 +169,33 @@ class ArticlesController extends Controller
             });
         }catch (\Throwable $exception){
             return response()->json([
-                'message' => '删除失败'
+                'message' => '删除失败, 所有操作已回滚'
             ],500);
         }
         return response()->json([
             'message' => '删除成功'
         ],204);
+    }
+
+    public function uploadImage(Request $request, ImageUploadHandler $uploader){
+        $data = [
+            'success' => false,
+            'msg' => '上传失败',
+            'file_path' => '',
+        ];
+        $status_code = 500;
+         if ($file = $request->upload_file){
+            $result = $uploader->save($request->upload_file, 'topics', \Auth::id(), 1024);
+            if ($result){
+                $data = [
+                    'file_path' => $result['path'],
+                    'msg' => '上传成功',
+                    'success' => true,
+                ];
+                $status_code = 201;
+            }
+        }
+        return response()->json($data,$status_code);
     }
 
     /**
@@ -126,9 +204,7 @@ class ArticlesController extends Controller
      */
     private function cacheArticlesCollection($rootId){
         $this->box = collect();
-        $this->box = Article::where('root',$rootId)->get()->mapWithKeys(function($item){
-            return [ $item->id => $item];
-        });
+        $this->box = Article::where('root',$rootId)->get()->keyBy('id');
     }
 
     private function cacheSubtree($id){
