@@ -30,7 +30,7 @@ class ArticleRequest extends FormRequest
                     'title' => 'required',
                     'parentId' => 'required',
                     'body' => 'required',
-                    'type' => 'required',
+                    'type' => 'in:left,right',
                 ];
             }
             default:{
