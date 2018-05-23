@@ -28,7 +28,7 @@ class ArticleTest extends TestCase
     }
 
     public function testTree(){
-        $response = $this->get(route('articles.tree',['id' => 5]));
+        $response = $this->get(route('articles.tree',['id' => 9]));
         $response->assertStatus(200);
     }
 
@@ -66,7 +66,7 @@ class ArticleTest extends TestCase
     }
 
     public function testDestroy(){
-        $article = 109;
+        $article = 105;
         $id = $article;
         // TODO: 需要优化
         $response = $this->withoutMiddleware()->delete(route('articles.destroy',['article' => $article]),[
@@ -101,5 +101,29 @@ class ArticleTest extends TestCase
         $article = Article::findOrFail($id);
         $this->assertEquals($title,$article->title);
         $this->assertEquals($body,$article->body);
+    }
+
+    public function testNullReference(){
+        $articles = Article::all()->keyBy('id');
+        $articles->each(function($value, $key)use($articles){
+            if ($value->leftChild){
+                $this->assertTrue($articles->contains($value->leftChild));
+                $this->assertEquals(Article::findOrFail($value->leftChild)->root,$value->root);
+            }
+            if ($value->rightChild){
+                $this->assertTrue($articles->contains($value->rightChild));
+                $this->assertEquals(Article::findOrFail($value->rightChild)->root,$value->root);
+            }
+        });
+    }
+
+    public function testInsertRootNode(){
+        $title = $this->faker->text(10);
+        $body = $this->faker->text(100);
+        $isRoot = true;
+        $root = Article::insertGetId(compact('title','body','isRoot'));
+        $article = Article::findOrFail($root);
+        $article->root = $root;
+        $article->update();
     }
 }
