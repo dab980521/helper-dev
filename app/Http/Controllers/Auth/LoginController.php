@@ -68,7 +68,7 @@ class LoginController extends Controller
     {
         $this->validateLogin($request);
 
-        if ($this->attemptLogin($request)) {
+        if (Auth::attempt(['name' => $request->name, 'password' => $request->password])) {
             $user = Auth::user();
             $api_token = str_random(10);
             Cache::tags('users')->put($user->name, $api_token, 10);
@@ -81,6 +81,19 @@ class LoginController extends Controller
         $this->incrementLoginAttempts($request);
 
         return $this->sendFailedLoginResponse($request);
+    }
+
+    protected function validateLogin(Request $request)
+    {
+        $this->validate($request, [
+            $this->username() => 'required|string',
+            'password' => 'required|string',
+        ]);
+    }
+
+    public function username()
+    {
+        return 'name';
     }
 
     public function logout(Request $request)
