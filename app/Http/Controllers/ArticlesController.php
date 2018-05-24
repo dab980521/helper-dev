@@ -30,8 +30,9 @@ class ArticlesController extends Controller
         return ArticleResource::collection($model->get());
     }
 
-    public function show($id){
-        return "TODO:".$id ;
+    public function show(ArticleRequest $request){
+        $article = Article::findOrFail($request->article);
+        return new ArticleResource($article);
     }
 
     public function tree($id) {
