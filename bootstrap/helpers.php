@@ -9,7 +9,7 @@
 function api_token(){
     if (Auth::user()){
         $name = Auth::user()->name;
-        return Cache::get($name);
+        return Cache::tags('users')->get($name);
     }
     return "";
 }

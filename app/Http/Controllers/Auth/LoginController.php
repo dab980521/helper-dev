@@ -40,6 +40,11 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
     }
 
+    /**
+     * TODO: remove this method
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function authenticate(Request $request){
         $name = $request->name;
         $password = $request->password;
@@ -66,7 +71,7 @@ class LoginController extends Controller
         if ($this->attemptLogin($request)) {
             $user = Auth::user();
             $api_token = str_random(10);
-            Cache::put($user->name, $api_token, 10);
+            Cache::tags('users')->put($user->name, $api_token, 10);
             return $this->sendLoginResponse($request);
         }
 
@@ -76,5 +81,18 @@ class LoginController extends Controller
         $this->incrementLoginAttempts($request);
 
         return $this->sendFailedLoginResponse($request);
+    }
+
+    public function logout(Request $request)
+    {
+        if (Auth::user()){
+            $name = Auth::user()->name;
+            Cache::tags('users')->forget($name);
+        }
+        $this->guard()->logout();
+
+        $request->session()->invalidate();
+
+        return redirect('/login');
     }
 }

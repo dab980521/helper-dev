@@ -16,7 +16,7 @@ class ApiAuthentication
      */
     public function handle($request, Closure $next)
     {
-        $api_token = Cache::get($request->name);
+        $api_token = Cache::tags('users')->get($request->name);
         if ($request->_token != $api_token){
             return response()->json([
                 'message' => '权限验证错误'
