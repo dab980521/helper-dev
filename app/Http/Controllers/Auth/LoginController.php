@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class LoginController extends Controller
 {
@@ -35,5 +38,74 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest')->except('logout');
+    }
+
+    /**
+     * TODO: remove this method
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function authenticate(Request $request){
+        $name = $request->name;
+        $password = $request->password;
+        $data = [
+            'message' => '登陆失败'
+        ];
+        if (Auth::attempt(['name' => $name, 'password' => $password])){
+            $user = Auth::user();
+            $api_token = str_random(10);
+            $data = [
+                'message' => '登陆成功',
+                'api_token' => $api_token,
+            ];
+            Cache::put($user->name, $api_token, 10); // TODO: 魔术数字警告，指的是登录失效时间
+            return response()->json($data,200);
+        }
+        return response()->json($data,401);
+    }
+
+    public function login(Request $request)
+    {
+        $this->validateLogin($request);
+
+        if (Auth::attempt(['name' => $request->name, 'password' => $request->password])) {
+            $user = Auth::user();
+            $api_token = str_random(10);
+            Cache::tags('users')->put($user->name, $api_token, 10);
+            return $this->sendLoginResponse($request);
+        }
+
+        // If the login attempt was unsuccessful we will increment the number of attempts
+        // to login and redirect the user back to the login form. Of course, when this
+        // user surpasses their maximum number of attempts they will get locked out.
+        $this->incrementLoginAttempts($request);
+
+        return $this->sendFailedLoginResponse($request);
+    }
+
+    protected function validateLogin(Request $request)
+    {
+        $this->validate($request, [
+            $this->username() => 'required|string',
+            'password' => 'required|string',
+        ]);
+    }
+
+    public function username()
+    {
+        return 'name';
+    }
+
+    public function logout(Request $request)
+    {
+        if (Auth::user()){
+            $name = Auth::user()->name;
+            Cache::tags('users')->forget($name);
+        }
+        $this->guard()->logout();
+
+        $request->session()->invalidate();
+
+        return redirect('/login');
     }
 }

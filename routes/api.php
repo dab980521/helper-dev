@@ -29,3 +29,5 @@ Route::resource('articles','ArticlesController')->except([
 Route::post('articles_root','ArticlesController@store_root')->name('articles.store_root');
 
 Route::post('upload_image','ArticlesController@uploadImage')->name('articles.upload_image');
+
+Route::post('/login','Auth\LoginController@authenticate')->name('login.api');
