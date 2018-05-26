@@ -135,6 +135,13 @@ class ArticleTest extends TestCase
         $this->assertEquals($data,$root);
     }
 
+    public function testStoreRoot(){
+        $title = $this->faker->text(10);
+        $body = $this->faker->text(100);
+        $response = $this->post(route('articles.store_root'),compact('title','body'));
+        $response->assertStatus(201);
+    }
+
     public function testUploadImage(){
         Storage::fake('avatars');
         $response = $this->json('POST',route('articles.upload_image'),[
