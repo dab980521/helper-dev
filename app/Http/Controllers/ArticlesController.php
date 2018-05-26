@@ -102,7 +102,10 @@ class ArticlesController extends Controller
             ], 500);
         }
         return response()->json([
-            'message' => '成功创建节点'
+            'message' => '成功创建节点',
+            'data' => [
+                'id' => $article->id
+            ]
         ],201);
     }
 
