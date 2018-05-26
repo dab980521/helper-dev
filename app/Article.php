@@ -17,15 +17,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property-read mixed $parent_id
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Article whereBody($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Article whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Article whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Article whereIsRoot($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Article whereLeftChild($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Article whereRightChild($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Article whereRoot($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Article whereTitle($value)
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Article whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Article where(string $column, mixed $operator = null, $value = null, string $boolean = 'and')
+ * @method static \App\Article findOrFail($id)
+ * @method static \Illuminate\Database\Eloquent\Builder getModel()
  */
 class Article extends Model
 {

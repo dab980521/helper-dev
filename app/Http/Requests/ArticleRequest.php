@@ -4,6 +4,13 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
+/**
+ * Class ArticleRequest
+ * @package App\Http\Requests
+ * @property string|null title
+ * @property string|null body
+ * @property string|null type
+ */
 class ArticleRequest extends FormRequest
 {
     /**
