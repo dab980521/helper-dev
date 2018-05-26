@@ -28,6 +28,15 @@ Cache-Control: no-cache
 
 ###
 
+POST http://10.1.38.20/api/articles_root
+Content-Type: application/json
+
+{
+    "title" : "hello",
+    "body" : "world"
+}
+
+###
 
 # For a quick start check out our HTTP Requests collection (Tools|HTTP Client|Open HTTP Requests Collection).
 #
