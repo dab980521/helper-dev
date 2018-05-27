@@ -4,7 +4,7 @@ Cache-Control: no-cache
 
 ###
 
-GET http://10.1.38.20/api/articles/229/tree
+GET http://10.1.38.20/api/articles/534/tree
 Accept: */*
 Cache-Control: no-cache
 

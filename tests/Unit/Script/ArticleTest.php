@@ -3,7 +3,7 @@
 namespace Tests\Unit\Resources;
 
 use App\Article;
-use App\User;
+
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -126,7 +126,7 @@ class ArticleTest extends TestCase
         $title = $this->faker->text(10);
         $body = $this->faker->text(100);
         $isRoot = true;
-        $article = Article::getModel();
+        $article = new Article();
         $article = $article->fill(compact('title','body','isRoot'));
         $article->save();
         $root = $article->id;

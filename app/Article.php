@@ -17,8 +17,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property \Carbon\Carbon|null $created_at
  * @property \Carbon\Carbon|null $updated_at
  * @property-read mixed $parent_id
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Article where(string $column, mixed $operator = null, $value = null, string $boolean = 'and')
- * @method static \App\Article findOrFail($id)
+ * @method static \Illuminate\Database\Eloquent\Builder|Article where(string $column, mixed $operator = null, $value = null, string $boolean = 'and')
+ * @method static Article findOrFail($id)
  * @method static \Illuminate\Database\Eloquent\Builder getModel()
  */
 class Article extends Model
