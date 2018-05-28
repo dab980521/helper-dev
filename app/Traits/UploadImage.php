@@ -20,11 +20,9 @@ trait UploadImage
      * @return \Illuminate\Http\JsonResponse
      */
     public function uploadImage(Request $request, ImageUploadHandler $uploader){
-        $data = [
-            'success' => false,
-            'msg' => '上传失败',
-            'file_path' => '',
-        ];
+        $success = false;
+        $msg = "上传失败";
+        $file_path = "";
         $status_code = 500;
         if ($file = $request->upload_file){
             $result = $uploader->save($request->upload_file, 'topics', \Auth::id(), 1024);
@@ -34,9 +32,12 @@ trait UploadImage
                     'msg' => '上传成功',
                     'success' => true,
                 ];
+                $file_path = $result['path'];
+                $msg = '上传成功';
+                $success = true;
                 $status_code = 201;
             }
         }
-        return response()->json($data,$status_code);
+        return response()->json(compact('file_path','msg','success'), $status_code);
     }
 }
