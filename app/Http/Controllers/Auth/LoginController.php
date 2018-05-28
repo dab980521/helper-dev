@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Traits\ApiToken;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Cache;
 
 class LoginController extends Controller
 {
+    use ApiToken;
     /*
     |--------------------------------------------------------------------------
     | Login Controller
@@ -69,10 +71,10 @@ class LoginController extends Controller
         $this->validateLogin($request);
 
         if (Auth::attempt(['name' => $request->name, 'password' => $request->password])) {
-            $user = Auth::user();
-            $api_token = str_random(10);
-            Cache::tags('users')->put($user->name, $api_token, 10);
-            return $this->sendLoginResponse($request);
+            $this->saveApiToken();
+            $this->clearLoginAttempts($request);
+//            return $this->sendLoginResponse($request);
+            return redirect()->to(route('home'));
         }
 
         // If the login attempt was unsuccessful we will increment the number of attempts
