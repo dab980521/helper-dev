@@ -27,11 +27,6 @@ trait UploadImage
         if ($file = $request->upload_file){
             $result = $uploader->save($request->upload_file, 'topics', \Auth::id(), 1024);
             if ($result){
-                $data = [
-                    'file_path' => $result['path'],
-                    'msg' => '上传成功',
-                    'success' => true,
-                ];
                 $file_path = $result['path'];
                 $msg = '上传成功';
                 $success = true;
