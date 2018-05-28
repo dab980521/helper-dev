@@ -12,6 +12,9 @@ use Illuminate\Http\UploadedFile;
 use Image;
 
 class ImageUploadHandler{
+    /**
+     * @var array
+     */
     protected $allowed_ext = ["png", "jpg", "gif", "jpeg"];
 
     /**
