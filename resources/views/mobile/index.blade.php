@@ -3,6 +3,9 @@
   <head>
       <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
       <script type="text/javascript" src="{{ asset("js/jquery.js") }}"></script>
+      <meta name="api-token" content="{{ api_token() }}">
+      <!-- CSRF Token -->
+      <meta name="csrf-token" content="{{ csrf_token() }}">
       <!--<script src="./src/assets/js/bootstrap.js"></script>-->
       <!--<style src="./src/assets/css/bootstrap.css"></style>-->
       <!--<style src="./src/assets/css/logo.css"></style>-->
