@@ -3,21 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Article;
+use App\Handlers\ImageUploadHandler;
 use App\Http\Requests\ArticleRequest;
 use App\Http\Resources\ArticleResource;
-use App\Traits\CacheArticles;
-use App\Traits\TreeifyArticles;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class ArticlesController extends Controller
 {
-    use TreeifyArticles;
-    use CacheArticles;
+    /**
+     * @var Collection
+     */
+    private $box;
 
     /**
-     * @param Request $request
-     * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
+     * @var Collection
      */
+    private $subtree;
+
     public function index(Request $request){
         $onlyRoot = $request->input("onlyRoot");
         $model = Article::getModel();
@@ -27,13 +30,34 @@ class ArticlesController extends Controller
         return ArticleResource::collection($model->get());
     }
 
-    /**
-     * @param ArticleRequest $request
-     * @return ArticleResource
-     */
     public function show(ArticleRequest $request){
         $article = Article::findOrFail($request->article);
         return new ArticleResource($article);
+    }
+
+    public function tree($id) {
+        // 清除缓存
+        $this->box = collect();
+        // 查找 root
+        $root = Article::findOrFail($id)->root;
+        // 获取树
+        $this->cacheArticlesCollection($root);
+        return $this->treeify($root);
+    }
+
+    private function treeify($node){
+        $children = collect();
+        if ($this->box[$node]->leftChild){
+            $children->push($this->treeify($this->box[$node]->leftChild));
+        }
+        if ($this->box[$node]->rightChild){
+            $children->push($this->treeify($this->box[$node]->rightChild));
+        }
+        return [
+            "title" => $this->box[$node]->title,
+            "id" => $this->box[$node]->id,
+            "children" => $children,
+        ];
     }
 
     /**
@@ -85,11 +109,6 @@ class ArticlesController extends Controller
         ],201);
     }
 
-    /**
-     * @param Request $request
-     * @param Article $article
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function store_root(Request $request, Article $article){
 
         $title = $request->title;
@@ -141,10 +160,6 @@ class ArticlesController extends Controller
         ],201);
     }
 
-    /**
-     * @param ArticleRequest $request
-     * @return \Illuminate\Http\JsonResponse
-     */
     public function destroy(ArticleRequest $request){
         $article = Article::findOrFail($request->id);
         $root = Article::findOrFail($article->id)->root;
@@ -169,5 +184,48 @@ class ArticlesController extends Controller
         return response()->json([
             'message' => '删除成功'
         ],204);
+    }
+
+    public function uploadImage(Request $request, ImageUploadHandler $uploader){
+        $data = [
+            'success' => false,
+            'msg' => '上传失败',
+            'file_path' => '',
+        ];
+        $status_code = 500;
+         if ($file = $request->upload_file){
+            $result = $uploader->save($request->upload_file, 'topics', \Auth::id(), 1024);
+            if ($result){
+                $data = [
+                    'file_path' => $result['path'],
+                    'msg' => '上传成功',
+                    'success' => true,
+                ];
+                $status_code = 201;
+            }
+        }
+        return response()->json($data,$status_code);
+    }
+
+    /**
+     * 将整棵树以 hash map 的形式缓存在全局变量 $this->box 中
+     * @param $rootId
+     */
+    private function cacheArticlesCollection($rootId){
+        $this->box = collect();
+        $this->box = Article::where('root',$rootId)->get()->keyBy('id');
+    }
+
+    private function cacheSubtree($id){
+        $this->subtree->push($id);
+        $left = $this->box[$id]->leftChild;
+        $right = $this->box[$id]->rightChild;
+        if ($left){
+            $this->cacheSubtree($left);
+        }
+        if ($right){
+            $this->cacheSubtree($right);
+        }
+
     }
 }
