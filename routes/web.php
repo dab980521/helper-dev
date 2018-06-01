@@ -13,7 +13,7 @@
 
 Route::get('/', function () {
     return view('desktop.index');
-});
+})->middleware("auth");
 
 Route::get('/mobile',function(){
     return view('mobile.index');
