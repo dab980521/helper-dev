@@ -15,6 +15,6 @@
   </head>
   <body>
     <div id="app"></div>
-    <script src="//localhost:8081/dist/build.js"></script>
+    <script src="{{ asset('js/mobile/build.js') }}"></script>
   </body>
 </html>

@@ -19,7 +19,7 @@
 </head>
 <body>
 <div id="app"></div>
-<script src="//localhost:8080/dist/build.js"></script>
+<script src="{{ asset('js/desktop/build.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/jquery.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/editor/module.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/editor/hotkeys.js') }}"></script>
