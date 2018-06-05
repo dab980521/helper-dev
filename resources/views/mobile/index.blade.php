@@ -11,7 +11,7 @@
       <!--<style src="./src/assets/css/logo.css"></style>-->
       <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
     <meta charset="utf-8">
-    <title>my-webpack-simple-demo</title>
+    <title>帮助手册</title>
   </head>
   <body>
     <div id="app"></div>

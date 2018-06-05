@@ -10,7 +10,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>webpack-simple-admain</title>
+    <title>编辑帮助手册</title>
     <meta name="api-token" content="{{ api_token() }}">
     {{--<script src="{{ asset('js/jquery.js') }}"></script><!--jQuery 3.3.1-->--}}
     <!-- CSRF Token -->
