@@ -14,7 +14,7 @@
                         </div>
                     @endif
 
-                    You are logged in! <a href="{{ env('APP_URL') }}"></a>
+                    登录成功！ <a href="{{ env('APP_URL') }}">编辑帮助手册</a>
                 </div>
             </div>
         </div>
